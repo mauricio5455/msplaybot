@@ -5,7 +5,14 @@ import makeWASocket, {
 } from '@whiskeysockets/baileys'
 import P from 'pino'
 import qrCode from 'qrcode-terminal'
+import cfontconfig from './util/cfontconfig.js'
+import chalk from 'chalk'
 import { carregarComandos } from './handler.js'
+
+cfontconfig()
+
+const PREFIX = ''
+const timeOut = new Map()
 
 async function startBot() {
   const { state, saveCreds } = await useMultiFileAuthState('auth')
@@ -34,7 +41,7 @@ async function startBot() {
         lastDisconnect?.error?.output?.statusCode !== DisconnectReason.loggedOut
       if (shouldReconnect) startBot()
     } else if (connection === 'open') {
-      console.log('✅ Conectado ao WhatsApp!')
+      console.log(`✅ ${chalk.white.bgGreen('Conectado ao WhatsApp!')}`)
     }
   })
 
@@ -45,12 +52,24 @@ async function startBot() {
     
     const sender = msg.key.remoteJid
     const body = msg.message
+
+    const senderInfo = timeOut.get(sender) || 0
+    
+    if(senderInfo) {
+      if(Date.now() - senderInfo < 10000) {
+        return
+      } else {
+        timeOut.set(sender, Date.now())
+      }
+    } else {
+      timeOut.set(sender, Date.now())
+    }
+
+
     const texto = (
       body?.conversation ||
       body?.extendedTextMessage?.text ||  body?.imageMessage?.caption || body?.videoMessage?.caption || ''
     ).trim()
-
-    const PREFIX = ''
 
     if (PREFIX && !texto.startsWith(PREFIX)) return
 
@@ -63,7 +82,7 @@ async function startBot() {
     try {
       await comando.executar({ sock, sender, args, msg, body })
     } catch (err) {
-      console.error(`Erro no comando "${nomeCmd}":`, err)
+      console.error(`❌ ${chalk.red('Erro no comando "${nomeCmd}":')}`, err)
       await sock.sendMessage(sender, { text: '❌ Erro ao executar o comando.' })
     }
   })

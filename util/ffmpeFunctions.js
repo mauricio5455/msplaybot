@@ -72,7 +72,7 @@ async function videoToSticker(buffer) {
 
     await new Promise((resolve, reject) => {
         ffmpeg(inputPath)
-            .inputOptions(['-t 6'])
+            .inputOptions(['-t 8'])
             .outputOptions([
             '-vf', 'scale=320:320:force_original_aspect_ratio=increase,crop=320:320,fps=14',
             '-vcodec', 'libwebp',
