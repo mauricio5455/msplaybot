@@ -31,5 +31,6 @@ Com as dependências instaladas, basta clonar o projeto, navegar até a sua past
 - Iniciar aplicação
 ```bash
 cd msbot
+npm i
 npm start
 ```
