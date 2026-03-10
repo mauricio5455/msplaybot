@@ -30,7 +30,7 @@ Com as dependências instaladas, basta clonar o projeto, navegar até a sua past
 
 - Iniciar aplicação
 ```bash
-cd msbot
+cd msplaybot
 npm i
 npm start
 ```
